@@ -22,14 +22,31 @@ router.use(listRouter.allowedMethods());
 // Create book route updated
 router.post('/books', async (ctx) => {
   const books = await getCollection();
-  const result = await books.insertOne(ctx.request.body);
+   const data = ctx.request.body as any;
+  const result = await books.insertOne(data);
+
   ctx.body = result;
 });
 
-// Update book route (not yet implemented)
-router.put('/books/:id', async (ctx) => {
-  ctx.status = 501;
-  ctx.body = { error: 'Update book not yet implemented' };
+// Updated book updates
+router.put('/books', async (ctx) => {
+  const books = await getCollection();
+   const data = ctx.request.body as any;
+
+  const result = await books.updateOne(
+    { _id: new ObjectId(ctx.params.id) },
+    { $set: data }
+  );
+
+
+  ctx.body = result;
 });
+
+//Delet books new 
+ router.delete('/books', async(ctx)=> {
+  const books= await getCollection();
+  const results= await books.deleteOne ({_id: new ObjectId(ctx.params.id)});
+  ctx.body=results;
+ })
 
 export default router;
