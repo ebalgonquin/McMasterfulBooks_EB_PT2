@@ -9,11 +9,12 @@ POST http://localhost:3000/books
 Content-Type: application/json
 
 {
-  "title": "Test Book",
+  "name": "McMasterful Book",
   "author": "Emily",
-  "year": 2024
+  "description": "A guide to frontend/backend harmony",
+  "price": 19.99,
+  "image": "https://example.com/mcmasterful.jpg"
 }
-
 ###
 PUT http://localhost:3000/books/6974ebcb8f0104e9556eba86
 Content-Type: application/json
@@ -24,4 +25,5 @@ Content-Type: application/json
   "year": 2026
 }
 
+###
 DELETE  http://localhost:3000/books/6974ebcb8f0104e9556eba86
