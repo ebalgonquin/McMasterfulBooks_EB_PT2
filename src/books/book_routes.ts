@@ -1,5 +1,13 @@
 import Router from '@koa/router';
 import { MongoClient, ObjectId } from "mongodb";
+import { Context } from "koa";
+
+interface Book {
+  title: string;
+  author: string;
+  year: number;
+}
+
 
 // MongoDB connection
 const client = new MongoClient("mongodb://mongo:27017");
@@ -17,24 +25,25 @@ const router = new Router();
 // router.use(listRouter.allowedMethods());
 
 // GET all books (MongoDB)
-router.get('/books', async (ctx) => {
+router.get('/books', async (ctx: Context) => {
   const books = await getCollection();
   const result = await books.find().toArray();
   ctx.body = result;
 });
 
 // CREATE a book
-router.post('/books', async (ctx) => {
+router.post('/books', async (ctx: Context) => {
   const books = await getCollection();
-  const data = ctx.request.body as any;
+
+  const data =ctx.request.body as Book;
   const result = await books.insertOne(data);
   ctx.body = result;
 });
 
 // UPDATE a book
-router.put('/books/:id', async (ctx) => {
+router.put('/books/:id', async (ctx:Context) => {
   const books = await getCollection();
-  const data = ctx.request.body as any;
+  const data = ctx.request.body as Book;
 
   const result = await books.updateOne(
     { _id: new ObjectId(ctx.params.id) },
@@ -44,8 +53,10 @@ router.put('/books/:id', async (ctx) => {
   ctx.body = result;
 });
 
+
+
 // DELETE a book
-router.delete('/books/:id', async (ctx) => {
+router.delete('/books/:id', async (ctx:Context) => {
   const books = await getCollection();
   const result = await books.deleteOne({ _id: new ObjectId(ctx.params.id) });
   ctx.body = result;

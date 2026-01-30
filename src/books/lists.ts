@@ -5,10 +5,10 @@ import books from '../../mcmasteful-book-list.json';
 const listRouter = new Router();
 
 listRouter.get('/books', async (ctx) => {
-  const filters = ctx.query.filters as Array<{ from?: string, to?: string }> | undefined;
+  const _filters = ctx.query.filters as Array<{ from?: string, to?: string }> | undefined;
 
   try {
-    let bookList = readBooksFromJsonData();
+    const bookList = readBooksFromJsonData();
 
     // Todo: Uncomment to Apply filters
     // if (filters && Array.isArray(filters) && filters.length > 0) {
@@ -28,7 +28,7 @@ listRouter.get('/books', async (ctx) => {
   }
 });
 
-function validateFilters(filters: any): boolean {
+function _validateFilters(filters: unknown): boolean {
   // Check if filters exist and are an array
   if (!filters || !Array.isArray(filters)) {
     return false;
@@ -63,7 +63,7 @@ function readBooksFromJsonData(): Book[] {
 }
 
 // Filter books by price range - a book matches if it falls within ANY of the filter ranges
-function filterBooks(bookList: Book[], filters: Array<{ from?: string, to?: string }>): Book[] {
+function _filterBooks(bookList: Book[], filters: Array<{ from?: string, to?: string }>): Book[] {
   return bookList.filter(book =>
     filters.some(filter => {
       const from = filter.from !== undefined ? parseFloat(filter.from) : undefined;
