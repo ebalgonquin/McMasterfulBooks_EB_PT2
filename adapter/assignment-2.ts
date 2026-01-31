@@ -16,12 +16,13 @@ async function listBooks(filters?: Array<{from?: number, to?: number}>) : Promis
 }
 
 async function createOrUpdateBook(book: Book): Promise<BookID> {
-    throw new Error("Todo")
+    return assignment1.createOrUpdateBook(book);
 }
 
 async function removeBook(book: BookID): Promise<void> {
-    throw new Error("Todo")
+    return assignment1.removeBook(book);
 }
+
 
 const assignment = "assignment-2";
 

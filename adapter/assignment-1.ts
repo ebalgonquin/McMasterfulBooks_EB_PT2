@@ -1,35 +1,54 @@
 export interface Book {
-  name: string,
-  author: string,
-  description: string,
-  price: number,
-  image: string,
-};
+  id?: string;
+  name: string;
+  author: string;
+  description: string;
+  price: number;
+  image: string;
+}
+let books: Book[] = [
+  {
+    id: "1",
+    name: "Sample Book",
+    author: "Author A",
+    description: "Demo",
+    price: 15,
+    image: "none"
+  }
+];
 
-async function listBooks(filters?: Array<{ from?: number, to?: number }>): Promise<Book[]> {
-  const query = filters?.map(({ from, to }, index) => {
-    let result = '';
-    if (typeof from === 'number') {
-      result += `filters[${index}][from]=${from}&`;
+let nextId = 2;
+async function listBooks(filters?: Array<{ from?: number; to?: number }>): Promise<Book[]> {
+  // Assignment 1 does NOT apply filters — just return everything
+  return books;
+}
+
+
+async function createOrUpdateBook(book: Book): Promise<string> {
+  if (book.id) {
+    // Update existing book
+    const index = books.findIndex(b => b.id === book.id);
+    if (index !== -1) {
+      books[index] = { ...books[index], ...book };
+      return book.id;
     }
-    if (typeof to === 'number') {
-      result += `filters[${index}][to]=${to}&`;
-    }
-    return result;
-  }).join('') ?? '';
-
-  const response = await fetch(`http://localhost:3000/books?${query}`);
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch books");
   }
 
-  return await response.json() as Book[];
+  // Create new book
+  const id = String(nextId++);
+  books.push({ ...book, id });
+  return id;
+}
+
+async function removeBook(id: string): Promise<void> {
+  books = books.filter(b => b.id !== id);
 }
 
 const assignment = "assignment-1";
 
 export default {
   assignment,
-  listBooks
+  listBooks,
+  createOrUpdateBook,
+  removeBook
 };
