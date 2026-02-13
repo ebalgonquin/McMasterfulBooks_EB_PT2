@@ -3,12 +3,14 @@
     "version": "1.0.0",
     "description": "This is a template repository for the first assignment in BVD 103 at McMaster Continuing Education.",
     "main": "index.js",
+    "type": "module",
     "scripts": {
         "start-server": "ts-node src/server.ts",
-          "lint": "eslint .",
-    "fix-lint": "eslint . --fix",
-    "typecheck": "tsc --noEmit"
-
+        "lint": "eslint .",
+        "fix-lint": "eslint . --fix",
+        "test": "vitest",
+        "test:ci": "vitest run",
+        "typecheck": "tsc --noEmit"
     },
     "keywords": [],
     "author": "",
@@ -33,8 +35,10 @@
         "@types/node": "^22.19.3",
         "eslint": "^9.39.2",
         "globals": "^17.2.0",
+        "mongodb-memory-server": "^11.0.1",
         "ts-node": "^10.9.2",
         "typescript": "^5.6.2",
-        "typescript-eslint": "^8.54.0"
+        "typescript-eslint": "^8.54.0",
+        "vitest": "^4.0.18"
     }
 }

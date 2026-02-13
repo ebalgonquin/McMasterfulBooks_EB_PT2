@@ -1,21 +1,29 @@
-import Koa from 'koa';
-import cors from '@koa/cors';
-import bodyParser from 'koa-bodyparser';
-import qs from 'koa-qs';
-import listRouter from './books/lists';
-//import bookRoutes from './books/book_routes';
+import Koa from 'koa'
+import cors from '@koa/cors'
+import bodyParser from 'koa-bodyparser'
+import qs from 'koa-qs'
 
-const app = new Koa();
-qs(app);
+import ZodRouter from '../api/router.js'
+import listBooksRoute from './books/lists.js'
+import lookupBookByIdRoute from './books/lookup.js'
 
-app.use(cors());
-app.use(bodyParser());
-app.use(listRouter.routes());
-app.use(listRouter.allowedMethods());
-//app.use(bookRoutes.allowedMethods());
-//app.use(bookRoutes.routes());
+const app = new Koa()
+const router = new ZodRouter()
 
-const PORT = 3000;
+qs(app)
+
+app.use(cors())
+app.use(bodyParser())
+
+// Register your routes
+listBooksRoute(router)
+lookupBookByIdRoute(router)
+
+// Attach router middleware
+app.use(router.routes())
+app.use(router.allowedMethods())
+
+const PORT = 3000
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-});
+  console.log(`Server running on http://localhost:${PORT}`)
+})

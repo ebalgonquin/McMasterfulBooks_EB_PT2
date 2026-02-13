@@ -1,61 +1,50 @@
-import Router from '@koa/router';
-import assignment3 from '../../adapter/assignment-3';
-import type { Book } from '../../adapter/assignment-3';
 
-const listRouter = new Router();
 
-listRouter.get('/books', async (ctx) => {
-  const _filters = ctx.query.filters as Array<{ from?: string; to?: string }> | undefined;
+import type { ZodRouter } from '../../api/router.js'
+import { getBookDatabase, type BookDatabaseAccessor } from '../database_access.js'
+import type { Book, Filter } from '../types.js'
+import { buildQueryFromFilters, mapDatabaseBookToApiBook } from '../books/helper.js'
+import { getWarehouse } from '../warehouse_access.js'
 
-  try {
-    // No filters → return all books
-    if (!_filters || !Array.isArray(_filters) || _filters.length === 0) {
-      ctx.body = await assignment3.listBooks([]);
-      return;
-    }
+// Domain logic
+async function listBooks(filters: Filter[], database: BookDatabaseAccessor): Promise<Book[]> {
+  const query = buildQueryFromFilters(filters)
+  const result = await database.books.find(query).toArray()
 
-    // Validate filters
-    if (!_validateFilters(_filters)) {
-      ctx.status = 400;
-      ctx.body = {
-        error:
-          'Invalid filters. Each filter must have valid "from" and "to" numbers where from <= to.',
-      };
-      return;
-    }
+  const warehouse = getWarehouse()
 
-    // Convert strings → numbers
-    const normalized = _filters.map(f => ({
-      from: f.from !== undefined ? parseFloat(f.from) : undefined,
-      to: f.to !== undefined ? parseFloat(f.to) : undefined
-    }));
+  const books: Book[] = []
 
-    // Apply filtering using the assignment-3 adapter
-    const filteredBooks = await assignment3.listBooks(normalized);
+  for (const dbBook of result) {
+    const apiBook = mapDatabaseBookToApiBook(dbBook)
 
-    ctx.body = filteredBooks;
-  } catch (error) {
-    ctx.status = 500;
-    ctx.body = { error: `Failed to fetch books due to: ${error}` };
-  }
-});
+    // apiBook.id is guaranteed to be a string after fixing types.ts + mapper
+    const copies = await warehouse.getCopies(apiBook.id)
+    const stock = Object.values(copies).reduce((a, b) => a + b, 0)
 
-// Validate filter structure
-function _validateFilters(filters: unknown): boolean {
-  if (!filters || !Array.isArray(filters)) {
-    return false;
+    books.push({
+      ...apiBook,
+      stock
+    })
   }
 
-  return filters.every((filter) => {
-    const from = filter.from !== undefined ? parseFloat(filter.from) : undefined;
-    const to = filter.to !== undefined ? parseFloat(filter.to) : undefined;
-
-    if (from !== undefined && isNaN(from)) return false;
-    if (to !== undefined && isNaN(to)) return false;
-    if (from !== undefined && to !== undefined && from > to) return false;
-
-    return true;
-  });
+  return books
 }
 
-export default listRouter;
+// Route wrapper
+export default function listBooksRoute(router: ZodRouter): void {
+  router.register({
+    handler: async (ctx: any, next: any) => {
+      // Ensure filters is ALWAYS an array
+      const { filters = [] } = ctx.request.query
+
+      // getBookDatabase() returns a Promise → must await it
+      const db = await getBookDatabase()
+
+      const result = await listBooks(filters, db)
+      ctx.body = result
+
+      await next()
+    }
+  })
+}

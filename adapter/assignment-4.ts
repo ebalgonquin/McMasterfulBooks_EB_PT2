@@ -1,4 +1,6 @@
-import previous_assignment from './assignment-3'
+import previous_assignment from './assignment-3.js'
+import { getBookDatabase } from '../src/database_access.js'
+import { lookupBookByIdDomain } from '../src/books/lookup.js'
 
 export type BookID = string
 
@@ -33,9 +35,7 @@ async function removeBook (book: BookID): Promise<void> {
   await previous_assignment.removeBook(book)
 }
 
-async function lookupBookById (book: BookID): Promise<Book> {
-  throw new Error("Todo")
-}
+
 
 export type ShelfId = string
 export type OrderId = string
@@ -71,6 +71,5 @@ export default {
   orderBooks,
   findBookOnShelf,
   fulfilOrder,
-  listOrders,
-  lookupBookById
+  listOrders
 }
