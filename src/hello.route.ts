@@ -1,13 +1,9 @@
-import { Route, Get, Path, Request } from 'tsoa'
-import { Request as KoaRequest } from 'koa'
+import { Route, Get, Path } from 'tsoa'
 
 @Route('hello')
 export class HelloRoute {
   @Get('{name}')
-  public async sayHello(
-    @Path() name: string,
-    @Request() request: KoaRequest
-  ): Promise<string> {
+  public async sayHello(@Path() name: string): Promise<string> {
     return `Hello ${name}`
   }
 }

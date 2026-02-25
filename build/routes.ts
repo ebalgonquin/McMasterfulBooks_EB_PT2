@@ -28,7 +28,6 @@ export function RegisterRoutes(router: KoaRouter) {
 
         const argsHelloRoute_sayHello: Record<string, TsoaRoute.ParameterSchema> = {
                 name: {"in":"path","name":"name","required":true,"dataType":"string"},
-                request: {"in":"request","name":"request","required":true,"dataType":"object"},
         };
         router.get('/hello/:name',
             ...(fetchMiddlewares<Middleware>(HelloRoute)),

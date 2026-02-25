@@ -5,12 +5,12 @@
     "main": "index.js",
     "type": "module",
     "scripts": {
-        "start-server": "ts-node src/server.ts",
-        "lint": "eslint .",
-        "fix-lint": "eslint . --fix",
+        "start-server": "./generate-openapi.sh && npx tsx ./index.ts",
+        "lint": "./generate-openapi.sh && eslint ./**/*.ts",
+        "fix-lint": "./generate-openapi.sh && eslint --fix ./**/*.ts",
+        "check-types": "./generate-openapi.sh && tsc --noEmit --project tsconfig.json",
         "test": "vitest",
-        "test:ci": "vitest run",
-        "typecheck": "tsc --noEmit"
+        "test:ci": "vitest run"
     },
     "keywords": [],
     "author": "",
@@ -29,6 +29,7 @@
     },
     "devDependencies": {
         "@eslint/js": "^9.39.2",
+        "@openapitools/openapi-generator-cli": "^2.29.0",
         "@types/koa": "^2.15.0",
         "@types/koa__cors": "^5.0.1",
         "@types/koa__router": "^12.0.5",
