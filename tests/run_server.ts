@@ -1,5 +1,5 @@
 import { afterEach, beforeEach } from 'vitest'
-import server from '../server.ts'
+import server from '../server'
 
 // Temporary stubs until DB is implemented
 type AppBookDatabaseState = Record<string, unknown>
