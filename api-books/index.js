@@ -5,6 +5,13 @@ app.get("/",(req,res)=>{
     res.send("Books API running");
 
 });
+const { subscribe } = require("./messaging/subscribe");
+const { updateStockCache } = require("./models/stockCache");
+
+subscribe("BookStocked", async (event) => {
+  await updateStockCache(event.bookId, event.amount);
+});
+
 app.listen(3001, ()=> console.log("Books API on 3001"));
 const { connect } = require("../messaging/rabbit");
 

@@ -16,39 +16,45 @@ services:
     volumes:
       - mongo-data:/data/db
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"     # RabbitMQ message port
+      - "15672:15672"   # RabbitMQ management UI
+
+  books-db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: books
+      POSTGRES_PASSWORD: books
+      POSTGRES_DB: booksdb
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./api-books/sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  warehouse-db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: warehouse
+      POSTGRES_PASSWORD: warehouse
+      POSTGRES_DB: warehousedb
+    ports:
+      - "5434:5432"
+    volumes:
+      - ./api-warehouse/sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  orders-db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: orders
+      POSTGRES_PASSWORD: orders
+      POSTGRES_DB: ordersdb
+    ports:
+      - "5435:5432"
+    volumes:
+      - ./api-orders/sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+
 volumes:
   mongo-data:
-
-  rabbitmq:
-  image: rabbitmq:3-management
-  container_name: rabbitmq
-  ports:
-    - "5672:5672"     # RabbitMQ message port
-    - "15672:15672"   # RabbitMQ management UI
-
-  
-books-db:
-  image: postgres:15
-  environment:
-    POSTGRES_USER: books
-    POSTGRES_PASSWORD: books
-    POSTGRES_DB: booksdb
-  ports:
-    - "5433:5432"
-warehouse-db:
-  image: postgres:15
-  environment:
-    POSTGRES_USER: warehouse
-    POSTGRES_PASSWORD: warehouse
-    POSTGRES_DB: warehousedb
-  ports:
-    - "5434:5432"
-
-orders-db:
-  image: postgres:15
-  environment:
-    POSTGRES_USER: orders
-    POSTGRES_PASSWORD: orders
-    POSTGRES_DB: ordersdb
-  ports:
-    - "5435:5432"
