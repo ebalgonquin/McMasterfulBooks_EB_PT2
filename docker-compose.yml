@@ -1,0 +1,46 @@
+version: "3.9"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"     # AMQP
+      - "15672:15672"   # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  api-books:
+    build: ./api-books
+    container_name: api-books
+    ports:
+      - "3001:3001"
+    depends_on:
+      - rabbitmq
+
+  api-warehouse:
+    build: ./api-warehouse
+    container_name: api-warehouse
+    ports:
+      - "3002:3002"
+    depends_on:
+      - rabbitmq
+
+  api-orders:
+    build: ./api-orders
+    container_name: api-orders
+    ports:
+      - "3003:3003"
+    depends_on:
+      - rabbitmq
+
+  adapter:
+    build: .
+    container_name: mcmasterful-books
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api-books
+      - api-warehouse
+      - api-orders

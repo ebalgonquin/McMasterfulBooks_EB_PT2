@@ -1,26 +1,28 @@
-const express= require ("express")
-const app =express();
+const express = require("express");
+const app = express();
 
-app.get("/",(req,res)=>{
-    res.send("Books API running");
-
-});
-const { subscribe } = require("./messaging/subscribe");
-const { updateStockCache } = require("./models/stockCache");
-
-subscribe("BookStocked", async (event) => {
-  await updateStockCache(event.bookId, event.amount);
+app.get("/", (req, res) => {
+  res.send("Books API running");
 });
 
-app.listen(3001, ()=> console.log("Books API on 3001"));
-const { connect } = require("../messaging/rabbit");
+// --- RabbitMQ temporarily disabled for Docker testing ---
+// const { subscribe } = require("./messaging/subscribe");
+// const { updateStockCache } = require("./models/stockCache");
 
-async function publishBookAdded(book) {
-  const channel = await connect();
-  const queue = "book-added";
+// subscribe("BookStocked", async (event) => {
+//   await updateStockCache(event.bookId, event.amount);
+// });
 
-  await channel.assertQueue(queue);
-  channel.sendToQueue(queue, Buffer.from(JSON.stringify(book)));
+// --- Publishing disabled too ---
+// const { connect } = require("./messaging/rabbit");
+// async function publishBookAdded(book) {
+//   const channel = await connect();
+//   const queue = "book-added";
 
-  console.log("Published BookAdded event:", book);
-}
+//   await channel.assertQueue(queue);
+//   channel.sendToQueue(queue, Buffer.from(JSON.stringify(book)));
+
+//   console.log("Published BookAdded event:", book);
+// }
+
+app.listen(3001, () => console.log("Books API on 3001"));
